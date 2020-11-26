@@ -1,0 +1,10 @@
+/_build/
+/.elixir_ls/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+sms_up-*.tar
+/tmp
