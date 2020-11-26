@@ -3,15 +3,7 @@ defmodule SmsUp do
   Documentation for `SmsUp`.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> SmsUp.hello()
-      :world
-
-  """
+  @spec hello :: :world
   def hello do
     :world
   end
