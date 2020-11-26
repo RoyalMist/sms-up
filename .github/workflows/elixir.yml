@@ -1,0 +1,24 @@
+name: Elixir CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    container: elixir:alpine
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          mix do local.hex --force, local.rebar --force
+          mix do deps.get, deps.compile
+      - name: Run tests
+        run: mix test
+        env:
+          MIX_ENV: test
