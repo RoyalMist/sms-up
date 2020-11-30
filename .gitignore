@@ -3,6 +3,7 @@
 /cover/
 /deps/
 /doc/
+/Mnesia.*/
 /.fetch
 erl_crash.dump
 *.ez

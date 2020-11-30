@@ -1,7 +1,13 @@
 defmodule SmsUp.Pin.Store do
+  import NaiveDateTime
   use GenServer
   require Logger
+  require Amnesia
+  require Amnesia.Helper
+  require Exquisite
+  require Database.Pin
   alias SmsUp.Pin.Generator
+  alias Database.Pin
 
   @moduledoc """
   This module stores random pin associated with an id to be checked later.
@@ -11,36 +17,49 @@ defmodule SmsUp.Pin.Store do
   '''
   """
 
-  @minutes_to_milliseconds 60 * 1000
+  @seconds_to_minute 60
 
   @doc false
-  @spec start_link :: :ignore | {:error, any} | {:ok, pid}
-  def start_link do
+  @spec start_link(any) :: :ignore | {:error, any} | {:ok, pid}
+  def start_link(args \\ []) do
     Logger.info("Starting the PIN Store")
-    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+    GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
   @doc false
-  @spec init(any) :: {:ok, %{}}
-  def init(_args) do
-    {:ok, %{}}
+  @spec init(any) :: {:ok, keyword()}
+  def init(args) do
+    {:ok, args}
   end
 
   @doc false
   def handle_call({:store, id}, _from, state) do
-    pin = get_pin_size() |> Generator.generate_pin()
-    {:reply, pin, state |> Map.put(id, pin)}
+    size = get_pin_size(state)
+    {:ok, pin} = Generator.generate_pin(size)
+
+    save_pin(id, pin, state)
+    {:reply, pin, state}
   end
 
   @doc false
   def handle_call({:validate, {id, pin}}, _from, state) do
     reply =
-      case state[id] do
-        {:ok, fetch_pin} when fetch_pin === pin -> {:ok, true}
-        _ -> {:ok, false}
+      Amnesia.transaction do
+        case Pin.read(id) do
+          %Pin{} = res ->
+            if res.pin === pin and compare(res.valid_until, utc_now()) === :gt do
+              Pin.delete(res)
+              {:ok, true}
+            else
+              {:ok, false}
+            end
+
+          _ ->
+            {:ok, false}
+        end
       end
 
-    {:reply, reply, state |> Map.delete(id)}
+    {:reply, reply, state}
   end
 
   @doc """
@@ -73,11 +92,20 @@ defmodule SmsUp.Pin.Store do
     GenServer.call(__MODULE__, {:validate, {id, pin}})
   end
 
-  defp get_pin_validity do
-    Application.get_env(:sms_up, :pin_validity, 10) * @minutes_to_milliseconds
+  defp save_pin(id, pin, state) do
+    validity = utc_now() |> add(get_pin_validity(state))
+
+    Amnesia.transaction do
+      %Pin{id: id, pin: pin, valid_until: validity}
+      |> Pin.write()
+    end
   end
 
-  defp get_pin_size do
-    Application.get_env(:sms_up, :pin_size, 6)
+  defp get_pin_validity(state) do
+    Keyword.get(state, :pin_validity, 10) * @seconds_to_minute
+  end
+
+  defp get_pin_size(state) do
+    Keyword.get(state, :pin_size, 6)
   end
 end
