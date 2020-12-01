@@ -11,10 +11,15 @@ defmodule SmsUp.Pin.Store do
 
   @moduledoc """
   This module stores random pin associated with an id to be checked later.
-  Default validity is 10 minutes and is configurable.
-  '''
-  config :sms_up, :pin, 15
-  '''
+  Default validity is 10 minutes and is configurable:
+  `
+  config :sms_up, :pin_validity, 15
+  `
+
+  Default token size is 6 and can be modified also:
+  `
+  config :sms_up, :pin_size, 4
+  `
   """
 
   @seconds_to_minute 60
@@ -34,6 +39,7 @@ defmodule SmsUp.Pin.Store do
 
   @doc false
   def handle_call({:store, id}, _from, state) do
+    ensure_db_up()
     size = get_pin_size(state)
     {:ok, pin} = Generator.generate_pin(size)
 
@@ -43,6 +49,7 @@ defmodule SmsUp.Pin.Store do
 
   @doc false
   def handle_call({:validate, {id, pin}}, _from, state) do
+    ensure_db_up()
     reply =
       Amnesia.transaction do
         case Pin.read(id) do
@@ -107,5 +114,11 @@ defmodule SmsUp.Pin.Store do
 
   defp get_pin_size(state) do
     Keyword.get(state, :pin_size, 6)
+  end
+
+  defp ensure_db_up do
+    unless Amnesia.Table.exists?(Pin) do
+      Database.create()
+    end
   end
 end
