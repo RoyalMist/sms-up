@@ -32,31 +32,38 @@ defmodule SmsUp do
   defdelegate validate(id, pin), to: SmsUp.Pin.Store
 
   @doc """
-  Send a sms with the chosen Sender Module (default is SmsUp.Sender.LoggerSender).
+  Send a sms with the chosen Sender Module.
   Configuration is available as :
   `
-  config :sms_up, :sender_module, MODULE
+  config :sms_up, :deliver_module, MODULE
   `
-  MODULE can be SmsUp.Sender.LoggerSender or SmsUp.Sender.SmsUpSender.
+  MODULE can be SmsUp.Delivery.LoggerDelivery (default) or SmsUp.Delivery.SmsUpDelivery.
+
   Returns a ok tuple containing the message body and the number for which it was sent to or an error tuple with the reason.
 
   ## Examples
 
-      iex> SmsUp.store("user@email.ch")
-      {:ok, "123456"}
+      iex> SmsUp.send_sms("+41765556677", "message")
+      {:ok, %{to: "+41765556677", body: "message"}}
   """
   @spec send_sms(String.t(), String.t()) ::
           {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
   defdelegate send_sms(number, text), to: SmsUp.Sender
 
   @doc """
-  Generate a pin code for the given id and store it in a mnesia database.
-  Returns the generated pin code.
+  Send a sms with the chosen Sender Module.
+  Configuration is available as :
+  `
+  config :sms_up, :deliver_module, MODULE
+  `
+  MODULE can be SmsUp.Delivery.LoggerDelivery (default) or SmsUp.Delivery.SmsUpDelivery.
+
+  Returns a ok tuple containing the message body and the number for which it was sent to or an error tuple with the reason.
 
   ## Examples
 
-      iex> SmsUp.store("user@email.ch")
-      {:ok, "123456"}
+      iex> SmsUp.send_sms("0765556677", "CH", "message")
+      {:ok, %{to: "+41765556677", body: "message"}}
   """
   @spec send_sms(String.t(), String.t(), String.t()) ::
           {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
