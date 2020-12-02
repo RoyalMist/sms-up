@@ -108,17 +108,17 @@ defmodule SmsUp.Pin.Store do
     end
   end
 
+  defp ensure_db_up do
+    unless Amnesia.Table.exists?(Pin) do
+      Database.create()
+    end
+  end
+
   defp get_pin_validity(state) do
     Keyword.get(state, :pin_validity, 10) * @seconds_to_minute
   end
 
   defp get_pin_size(state) do
     Keyword.get(state, :pin_size, 6)
-  end
-
-  defp ensure_db_up do
-    unless Amnesia.Table.exists?(Pin) do
-      Database.create()
-    end
   end
 end
