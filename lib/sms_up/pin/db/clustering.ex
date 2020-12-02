@@ -8,6 +8,7 @@ defmodule SmsUp.Pin.Db.Clustering do
   end
 
   def init(_args) do
+    Logger.info("Starting Mnesia Cluster Manager")
     nodes = [node() | Node.list()]
     Amnesia.start()
     :net_kernel.monitor_nodes(true)

@@ -27,13 +27,13 @@ defmodule SmsUp.Pin.Store do
   @doc false
   @spec start_link(any) :: :ignore | {:error, any} | {:ok, pid}
   def start_link(args \\ []) do
-    Logger.info("Starting the PIN Store")
     GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
   @doc false
   @spec init(any) :: {:ok, keyword()}
   def init(args) do
+    Logger.info("Starting the One Time Password Store")
     {:ok, args}
   end
 
