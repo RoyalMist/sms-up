@@ -1,6 +1,8 @@
 defmodule SmsUp do
   @moduledoc """
-  Documentation for `SmsUp`.
+  SmsUp is used to send sms throught [SmsUP](https://smsup.ch) (other api may be integrated easily) by implementing the same behaviour.
+  This module provides delegates to the internal modules for sending sms and the distributed One Time Password store.
+  For the One Time Password functionality if you are part of a cluster the librairy uses mnesia to distibute the store accross the nodes.
   """
 
   @doc """
