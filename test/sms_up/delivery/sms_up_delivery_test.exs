@@ -1,6 +1,5 @@
 defmodule SmsUp.Delivery.SmsUpDeliveryTest do
   use ExUnit.Case
-  doctest SmsUp.Delivery.SmsUpDelivery
   alias SmsUp.Delivery.SmsUpDelivery
 
   describe "Should construct url with the mandatory fields and otpions" do
