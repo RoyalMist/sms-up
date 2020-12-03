@@ -12,6 +12,7 @@ defmodule SmsUp.Sender do
   `
   config :sms_up, deliver_module: MODULE
   `
+
   MODULE can be:
   * SmsUp.Delivery.LoggerDelivery (default)
   * SmsUp.Delivery.SmsUpDelivery.
@@ -43,6 +44,7 @@ defmodule SmsUp.Sender do
   `
   config :sms_up, deliver_module: MODULE
   `
+
   MODULE can be:
   * SmsUp.Delivery.LoggerDelivery (default)
   * SmsUp.Delivery.SmsUpDelivery.
