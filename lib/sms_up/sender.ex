@@ -1,6 +1,5 @@
 defmodule SmsUp.Sender do
   alias SmsUp.Numbers.PhoneValidator
-  @deliver_module Application.get_env(:sms_up, :deliver_module, SmsUp.Delivery.LoggerDelivery)
 
   @moduledoc """
   SMS sender api that can accept a configurable deliver for sending successfull messages.
@@ -10,9 +9,11 @@ defmodule SmsUp.Sender do
   Send a sms with the chosen Sender Module.
   Configuration is available as :
   `
-  config :sms_up, :deliver_module, MODULE
+  config :sms_up, deliver_module: MODULE
   `
-  MODULE can be SmsUp.Delivery.LoggerDelivery (default) or SmsUp.Delivery.SmsUpDelivery.
+  MODULE can be:
+  * SmsUp.Delivery.LoggerDelivery (default)
+  * SmsUp.Delivery.SmsUpDelivery.
 
   Returns a ok tuple containing the message body and the number for which it was sent to or an error tuple with the reason.
 
@@ -38,9 +39,11 @@ defmodule SmsUp.Sender do
   Send a sms with the chosen Sender Module.
   Configuration is available as :
   `
-  config :sms_up, :deliver_module, MODULE
+  config :sms_up, deliver_module: MODULE
   `
-  MODULE can be SmsUp.Delivery.LoggerDelivery (default) or SmsUp.Delivery.SmsUpDelivery.
+  MODULE can be:
+  * SmsUp.Delivery.LoggerDelivery (default)
+  * SmsUp.Delivery.SmsUpDelivery.
 
   Returns a ok tuple containing the message body and the number for which it was sent to or an error tuple with the reason.
 
@@ -66,5 +69,5 @@ defmodule SmsUp.Sender do
   end
 
   @doc false
-  defdelegate deliver(number, text, options), to: @deliver_module
+  defdelegate deliver(number, text, options), to: Application.get_env(:sms_up, :deliver_module, SmsUp.Delivery.LoggerDelivery)
 end
