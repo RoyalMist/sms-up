@@ -13,7 +13,7 @@ defmodule SmsUp.Pin.Store do
   This module stores random pin associated with an id to be checked later.
   Default validity is 10 minutes and is configurable:
   `
-  config :sms_up, :pin_validity, 15
+  config :sms_up, pin_validity: 15
   `
 
   Default token size is 6 and can be modified also:

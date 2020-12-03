@@ -46,9 +46,9 @@ defmodule SmsUp do
       iex> SmsUp.send_sms("+41765556677", "message")
       {:ok, %{to: "+41765556677", body: "message"}}
   """
-  @spec send_sms(String.t(), String.t()) ::
+  @spec send_sms(String.t(), String.t(), Keyword.t()) ::
           {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
-  defdelegate send_sms(number, text), to: SmsUp.Sender
+  defdelegate send_sms(number, text, options), to: SmsUp.Sender
 
   @doc """
   Send a sms with the chosen Sender Module.
@@ -67,5 +67,5 @@ defmodule SmsUp do
   """
   @spec send_sms(String.t(), String.t(), String.t()) ::
           {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
-  defdelegate send_sms(number, country_code, text), to: SmsUp.Sender
+  defdelegate send_sms(number, country_code, text, options), to: SmsUp.Sender
 end
