@@ -6,7 +6,8 @@ defmodule SmsUp.Sender do
   """
 
   @doc """
-  Send a sms with the chosen Sender Module.
+  Send a sms with the chosen Sender Module with an international formated number.
+
   Configuration is available as :
   `
   config :sms_up, deliver_module: MODULE
@@ -36,7 +37,8 @@ defmodule SmsUp.Sender do
   end
 
   @doc """
-  Send a sms with the chosen Sender Module.
+  Send a sms with the chosen Sender Module with national number and country code.
+
   Configuration is available as :
   `
   config :sms_up, deliver_module: MODULE
