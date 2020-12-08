@@ -19,6 +19,8 @@ jobs:
           mix do local.hex --force, local.rebar --force
           mix do deps.get, deps.compile
       - name: Run tests
-        run: mix test
+        run: |
+          mix compile --warnings-as-errors
+          mix test
         env:
           MIX_ENV: test
