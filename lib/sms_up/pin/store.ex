@@ -58,6 +58,7 @@ defmodule SmsUp.Pin.Store do
               Pin.delete(res)
               {:ok, true}
             else
+              Pin.delete(res)
               {:ok, false}
             end
 
