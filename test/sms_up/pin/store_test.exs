@@ -4,24 +4,24 @@ defmodule SmsUp.Pin.StoreTest do
 
   describe "This module should store generated one time password during a certain amount of time a be resilient to restarts" do
     test "should store a pin with the given user id" do
-      assert pin = Store.store(123)
-      assert {:ok, true} = Store.validate(123, pin)
+      pin = Store.store(123)
+      assert true == Store.validate(123, pin)
     end
 
     test "should store an pin with the given user email" do
-      assert pin = Store.store("user@email.ch")
-      assert {:ok, true} = Store.validate("user@email.ch", pin)
+      pin = Store.store("user@email.ch")
+      assert true == Store.validate("user@email.ch", pin)
     end
 
     test "should store an pin and refute the pin if not correct" do
       assert _ = Store.store("user@email.ch")
-      assert {:ok, false} = Store.validate("user@email.ch", "123456")
+      assert false == Store.validate("user@email.ch", "123456")
     end
 
     test "should erase an pin and refute following requests after a success" do
-      assert pin = Store.store("user@email.ch")
-      assert {:ok, true} = Store.validate("user@email.ch", pin)
-      assert {:ok, false} = Store.validate("user@email.ch", pin)
+      pin = Store.store("user@email.ch")
+      assert true == Store.validate("user@email.ch", pin)
+      assert false == Store.validate("user@email.ch", pin)
     end
   end
 end

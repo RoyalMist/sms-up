@@ -34,6 +34,8 @@ defmodule SmsUp.Pin.Store do
   @spec init(any) :: {:ok, keyword()}
   def init(args) do
     Logger.info("Starting the One Time Password Store")
+    # TODO cleanup already expired tokens from mnesia
+    Process.send_after(self(), :cleanup, 10)
     {:ok, args}
   end
 
@@ -50,24 +52,29 @@ defmodule SmsUp.Pin.Store do
   @doc false
   def handle_call({:validate, {id, pin}}, _from, state) do
     ensure_db_up()
+
     reply =
       Amnesia.transaction do
         case Pin.read(id) do
           %Pin{} = res ->
-            if res.pin === pin and compare(res.valid_until, utc_now()) === :gt do
+            if res.pin === pin do
               Pin.delete(res)
-              {:ok, true}
+              true
             else
-              Pin.delete(res)
-              {:ok, false}
+              false
             end
 
           _ ->
-            {:ok, false}
+            false
         end
       end
 
     {:reply, reply, state}
+  end
+
+  def handle_info(:cleanup, state) do
+    Logger.info("Cleaning old OTP")
+    {:noreply, state}
   end
 
   @doc """
@@ -77,9 +84,9 @@ defmodule SmsUp.Pin.Store do
   ## Examples
 
       iex> SmsUp.Pin.Store.store("user@email.ch")
-      {:ok, "123456"}
+      "123456"
   """
-  @spec store(any) :: {:ok, String.t()} | {:error, String.t()}
+  @spec store(any) :: String.t()
   def store(id) do
     GenServer.call(__MODULE__, {:store, id})
   end
@@ -90,12 +97,12 @@ defmodule SmsUp.Pin.Store do
 
   ## Examples
       iex> SmsUp.Pin.Store.validate("user@email.ch", "Good Pin")
-      {:ok, true}
+      true
 
       iex> SmsUp.Pin.Store.validate("user@email.ch", "Wrong Pin")
-      {:ok, false}
+      false
   """
-  @spec validate(any, String.t()) :: {:ok, true} | {:ok, false}
+  @spec validate(any, String.t()) :: true | false
   def validate(id, pin) do
     GenServer.call(__MODULE__, {:validate, {id, pin}})
   end

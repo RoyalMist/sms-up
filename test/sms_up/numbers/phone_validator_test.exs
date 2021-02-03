@@ -31,27 +31,27 @@ defmodule SmsUp.Numbers.PhoneValidatorTest do
 
   describe "Should format the given number to international format regarding the given country code" do
     test "Should format a valid number with valid country code (CH)" do
-      assert {:ok, "+41765557788"} = PhoneValidator.format("0765557788", "CH")
+      assert {:ok, "+41765557788"} == PhoneValidator.format("0765557788", "CH")
     end
 
     test "Should format a valid number with valid country code (FR)" do
-      assert {:ok, "+33630772288"} = PhoneValidator.format("0630772288", "FR")
+      assert {:ok, "+33630772288"} == PhoneValidator.format("0630772288", "FR")
     end
 
     test "Should format a valid number missing the 0 prefix" do
-      assert {:ok, "+41765557788"} = PhoneValidator.format("765557788", "CH")
+      assert {:ok, "+41765557788"} == PhoneValidator.format("765557788", "CH")
     end
 
     test "Should left a valid international formated number unchanged" do
-      assert {:ok, "+41765557788"} = PhoneValidator.format("+41765557788", "CH")
+      assert {:ok, "+41765557788"} == PhoneValidator.format("+41765557788", "CH")
     end
 
     test "Should return an error in case of not valid country code" do
-      assert {:error, "Invalid country calling code"} = PhoneValidator.format("0765557788", "ZZ")
+      assert {:error, "Invalid country calling code"} == PhoneValidator.format("0765557788", "ZZ")
     end
 
     test "Should return an error in case of not valid phone number" do
-      assert {:error, "The string supplied did not seem to be a phone number"} =
+      assert {:error, "The string supplied did not seem to be a phone number"} ==
                PhoneValidator.format("Hello", "FR")
     end
   end
