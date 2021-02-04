@@ -23,10 +23,10 @@ defmodule SmsUp do
 
   ## Examples
       iex> SmsUp.validate("user@email.ch", "Good Pin")
-      true
+      {:ok, true}
 
       iex> SmsUp.validate("user@email.ch", "Wrong Pin")
-      false
+      {:ok, false}
   """
   @spec validate(any, binary) :: true | false
   defdelegate validate(id, pin), to: SmsUp.Pin.Store

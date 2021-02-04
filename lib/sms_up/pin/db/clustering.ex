@@ -10,14 +10,13 @@ defmodule SmsUp.Pin.Db.Clustering do
   def init(_args) do
     Logger.info("Starting Mnesia Cluster Manager")
     nodes = [node() | Node.list()]
-    Amnesia.start()
+    Memento.start()
     :net_kernel.monitor_nodes(true)
     {:ok, nodes}
   end
 
   def handle_info({:nodeup, node}, nodes) do
     nodes = [node | nodes]
-    Amnesia.Schema.create(nodes)
     :mnesia.change_config(:extra_db_nodes, [node])
     {:noreply, nodes}
   end

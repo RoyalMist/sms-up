@@ -2,12 +2,8 @@ defmodule SmsUp.Pin.Store do
   import NaiveDateTime
   use GenServer
   require Logger
-  require Amnesia
-  require Amnesia.Helper
-  require Exquisite
-  require Database.Pin
   alias SmsUp.Pin.Generator
-  alias Database.Pin
+  alias SmsUp.Pin.Db.Pin
 
   @moduledoc """
   This module stores random pin associated with an id to be checked later.
@@ -34,14 +30,12 @@ defmodule SmsUp.Pin.Store do
   @spec init(any) :: {:ok, keyword()}
   def init(args) do
     Logger.info("Starting the One Time Password Store")
-    # TODO cleanup already expired tokens from mnesia
     Process.send_after(self(), :cleanup, 10)
     {:ok, args}
   end
 
   @doc false
   def handle_call({:store, id}, _from, state) do
-    ensure_db_up()
     size = get_pin_size(state)
     {:ok, pin} = Generator.generate_pin(size)
 
@@ -51,29 +45,33 @@ defmodule SmsUp.Pin.Store do
 
   @doc false
   def handle_call({:validate, {id, pin}}, _from, state) do
-    ensure_db_up()
+    {:reply,
+     Memento.transaction(fn ->
+       case Memento.Query.read(Pin, id) do
+         nil ->
+           false
 
-    reply =
-      Amnesia.transaction do
-        case Pin.read(id) do
-          %Pin{} = res ->
-            if res.pin === pin do
-              Pin.delete(res)
-              true
-            else
-              false
-            end
-
-          _ ->
-            false
-        end
-      end
-
-    {:reply, reply, state}
+         res ->
+           if res.pin === pin and compare(res.valid_until, utc_now()) === :gt do
+             Memento.Query.delete(Pin, id)
+             true
+           else
+             false
+           end
+       end
+     end), state}
   end
 
   def handle_info(:cleanup, state) do
-    Logger.info("Cleaning old OTP")
+    Memento.transaction(fn ->
+      for pin <- Memento.Query.all(Pin) do
+        if compare(pin.valid_until, utc_now()) === :lt do
+          Memento.Query.delete(Pin, pin.id)
+        end
+      end
+    end)
+
+    Process.send_after(self(), :cleanup, 10000)
     {:noreply, state}
   end
 
@@ -88,6 +86,7 @@ defmodule SmsUp.Pin.Store do
   """
   @spec store(any) :: String.t()
   def store(id) do
+    ensure_db_up()
     GenServer.call(__MODULE__, {:store, id})
   end
 
@@ -97,33 +96,31 @@ defmodule SmsUp.Pin.Store do
 
   ## Examples
       iex> SmsUp.Pin.Store.validate("user@email.ch", "Good Pin")
-      true
+      {:ok, true}
 
       iex> SmsUp.Pin.Store.validate("user@email.ch", "Wrong Pin")
-      false
+      {:ok, false}
   """
   @spec validate(any, String.t()) :: true | false
   def validate(id, pin) do
+    ensure_db_up()
     GenServer.call(__MODULE__, {:validate, {id, pin}})
   end
 
   defp save_pin(id, pin, state) do
     validity = utc_now() |> add(get_pin_validity(state))
 
-    Amnesia.transaction do
-      %Pin{id: id, pin: pin, valid_until: validity}
-      |> Pin.write()
-    end
+    Memento.transaction(fn ->
+      Memento.Query.write(%Pin{id: id, pin: pin, valid_until: validity})
+    end)
   end
 
-  defp ensure_db_up do
-    unless Amnesia.Table.exists?(Pin) do
-      Database.create()
-    end
+  defp ensure_db_up() do
+    Memento.Table.create(SmsUp.Pin.Db.Pin)
   end
 
   defp get_pin_validity(state) do
-    Keyword.get(state, :pin_validity, 10) * @seconds_to_minute
+    Keyword.get(state, :pin_validity, 30) * @seconds_to_minute
   end
 
   defp get_pin_size(state) do
