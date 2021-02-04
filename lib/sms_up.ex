@@ -48,24 +48,5 @@ defmodule SmsUp do
   """
   @spec send_sms(String.t(), String.t(), Keyword.t()) ::
           {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
-  defdelegate send_sms(number, text, options), to: SmsUp.Sender
-
-  @doc """
-  Send a sms with the chosen Sender Module.
-  Configuration is available as :
-  `
-  config :sms_up, :deliver_module, MODULE
-  `
-  MODULE can be SmsUp.Delivery.LoggerDelivery (default) or SmsUp.Delivery.SmsUpDelivery.
-
-  Returns a ok tuple containing the message body and the number for which it was sent to or an error tuple with the reason.
-
-  ## Examples
-
-      iex> SmsUp.send_sms("0765556677", "CH", "message")
-      {:ok, %{to: "+41765556677", body: "message"}}
-  """
-  @spec send_sms(String.t(), String.t(), String.t()) ::
-          {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
-  defdelegate send_sms(number, country_code, text, options), to: SmsUp.Sender
+  defdelegate send_sms(number, text, options \\ []), to: SmsUp.Sender
 end

@@ -29,46 +29,11 @@ defmodule SmsUp.Sender do
   """
   @spec send_sms(String.t(), String.t(), Keyword.t()) ::
           {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
-  def send_sms(number, text, options) when is_binary(number) and is_binary(text) do
+  def send_sms(number, text, options \\ []) when is_binary(number) and is_binary(text) do
     if PhoneValidator.is_valid_number?(number) do
       deliver(number, text, options)
     else
       {:error, "#{number} is not a valid number"}
-    end
-  end
-
-  @doc """
-  Send a sms with the chosen Sender Module with national number and country code.
-
-  Configuration is available as :
-  `
-  config :sms_up, deliver_module: MODULE
-  `
-
-  MODULE can be:
-  * SmsUp.Delivery.LoggerDelivery (default)
-  * SmsUp.Delivery.SmsUpDelivery.
-
-  Returns a ok tuple containing the message body and the number for which it was sent to or an error tuple with the reason.
-
-  ## Examples
-
-      iex> SmsUp.send_sms("0765556677", "CH", "message", [])
-      {:ok, %{to: "+41765556677", body: "message", options: []}}
-
-      iex> SmsUp.send_sms("0630772288", "ZZ", "message", [])
-      {:error, "Invalid country calling code"}
-
-      iex> SmsUp.send_sms("Hello", "FR", "message", [])
-      {:error, "The string supplied did not seem to be a phone number"}
-  """
-  @spec send_sms(String.t(), String.t(), String.t(), Keyword.t()) ::
-          {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
-  def send_sms(number, country_code, text, options)
-      when is_binary(number) and is_binary(country_code) and is_binary(text) do
-    case PhoneValidator.format(number, country_code) do
-      {:ok, number} -> send_sms(number, text, options)
-      error -> error
     end
   end
 
