@@ -30,7 +30,7 @@ defmodule SmsUp.Pin.Store do
   @spec init(any) :: {:ok, keyword()}
   def init(args) do
     Logger.info("Starting the One Time Password Store")
-    Process.send_after(self(), :cleanup, 10)
+    send(self(), :cleanup)
     {:ok, args}
   end
 
@@ -45,19 +45,19 @@ defmodule SmsUp.Pin.Store do
 
   @doc false
   def handle_call({:validate, {id, pin}}, _from, state) do
+    query = [
+      {:==, :id, id},
+      {:==, :pin, pin}
+    ]
+
     {:reply,
      Memento.transaction(fn ->
-       case Memento.Query.read(Pin, id) do
-         nil ->
-           false
+       case Memento.Query.select(Pin, query) do
+         [_h | _t] ->
+           true
 
-         res ->
-           if res.pin === pin and compare(res.valid_until, utc_now()) === :gt do
-             Memento.Query.delete(Pin, id)
-             true
-           else
-             false
-           end
+         _ ->
+           false
        end
      end), state}
   end
@@ -66,12 +66,13 @@ defmodule SmsUp.Pin.Store do
     Memento.transaction(fn ->
       for pin <- Memento.Query.all(Pin) do
         if compare(pin.valid_until, utc_now()) === :lt do
-          Memento.Query.delete(Pin, pin.id)
+          IO.inspect(pin)
+          Memento.Query.delete_record(pin)
         end
       end
     end)
 
-    Process.send_after(self(), :cleanup, 10000)
+    Process.send_after(self(), :cleanup, 60_000)
     {:noreply, state}
   end
 
