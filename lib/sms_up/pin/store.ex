@@ -102,7 +102,7 @@ defmodule SmsUp.Pin.Store do
       iex> SmsUp.Pin.Store.validate("user@email.ch", "Wrong Pin")
       {:ok, false}
   """
-  @spec validate(any, String.t()) :: true | false
+  @spec validate(any, String.t()) :: {:ok, true} | {:ok, false}
   def validate(id, pin) do
     ensure_db_up()
     GenServer.call(__MODULE__, {:validate, {id, pin}})
