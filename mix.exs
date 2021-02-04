@@ -5,7 +5,7 @@ defmodule SmsUp.MixProject do
     [
       app: :sms_up,
       elixir: "~> 1.11",
-      version: "0.5.0",
+      version: "1.0.0",
       source_url: "https://github.com/RoyalMist/sms_up",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
