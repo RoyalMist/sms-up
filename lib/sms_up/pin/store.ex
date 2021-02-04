@@ -53,7 +53,8 @@ defmodule SmsUp.Pin.Store do
     {:reply,
      Memento.transaction(fn ->
        case Memento.Query.select(Pin, query) do
-         [_h | _t] ->
+         [h | _t] ->
+          Memento.Query.delete_record(h)
            true
 
          _ ->
@@ -66,7 +67,6 @@ defmodule SmsUp.Pin.Store do
     Memento.transaction(fn ->
       for pin <- Memento.Query.all(Pin) do
         if compare(pin.valid_until, utc_now()) === :lt do
-          IO.inspect(pin)
           Memento.Query.delete_record(pin)
         end
       end
