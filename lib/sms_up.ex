@@ -12,9 +12,9 @@ defmodule SmsUp do
   ## Examples
 
       iex> SmsUp.store("user@email.ch")
-      "123456"
+      {:ok, "123456"}
   """
-  @spec store(any) :: String.t()
+  @spec store(any) :: {:error, String.t()} | {:ok, String.t()}
   defdelegate store(id), to: SmsUp.Pin.Store
 
   @doc """

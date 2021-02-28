@@ -18,12 +18,10 @@ defmodule SmsUp.Pin.Store do
   `
   """
 
-  @seconds_to_minute 60
-
   @doc false
   @spec start_link(any) :: :ignore | {:error, any} | {:ok, pid}
   def start_link(args \\ []) do
-    GenServer.start_link(__MODULE__, args, name: __MODULE__)
+    GenServer.start_link(__MODULE__, args)
   end
 
   @doc false
@@ -35,34 +33,6 @@ defmodule SmsUp.Pin.Store do
   end
 
   @doc false
-  def handle_call({:store, id}, _from, state) do
-    size = get_pin_size(state)
-    {:ok, pin} = Generator.generate_pin(size)
-
-    save_pin(id, pin, state)
-    {:reply, pin, state}
-  end
-
-  @doc false
-  def handle_call({:validate, {id, pin}}, _from, state) do
-    query = [
-      {:==, :id, id},
-      {:==, :pin, pin}
-    ]
-
-    {:reply,
-     Memento.transaction(fn ->
-       case Memento.Query.select(Pin, query) do
-         [h | _t] ->
-          Memento.Query.delete_record(h)
-           true
-
-         _ ->
-           false
-       end
-     end), state}
-  end
-
   def handle_info(:cleanup, state) do
     Memento.transaction(fn ->
       for pin <- Memento.Query.all(Pin) do
@@ -83,12 +53,25 @@ defmodule SmsUp.Pin.Store do
   ## Examples
 
       iex> SmsUp.Pin.Store.store("user@email.ch")
-      "123456"
+      {:ok, "123456"}
   """
-  @spec store(any) :: String.t()
+  @spec store(any) :: {:error, String.t()} | {:ok, String.t()}
   def store(id) do
     ensure_db_up()
-    GenServer.call(__MODULE__, {:store, id})
+
+    case Generator.generate_pin(get_pin_size()) do
+      {:ok, pin} ->
+        validity = utc_now() |> add(get_pin_validity())
+
+        Memento.transaction(fn ->
+          Memento.Query.write(%Pin{id: id, pin: pin, valid_until: validity})
+        end)
+
+        {:ok, pin}
+
+      _ ->
+        {:error, "Impossible to generate a pin"}
+    end
   end
 
   @doc """
@@ -105,14 +88,21 @@ defmodule SmsUp.Pin.Store do
   @spec validate(any, String.t()) :: {:ok, true} | {:ok, false}
   def validate(id, pin) do
     ensure_db_up()
-    GenServer.call(__MODULE__, {:validate, {id, pin}})
-  end
 
-  defp save_pin(id, pin, state) do
-    validity = utc_now() |> add(get_pin_validity(state))
+    query = [
+      {:==, :id, id},
+      {:==, :pin, pin}
+    ]
 
     Memento.transaction(fn ->
-      Memento.Query.write(%Pin{id: id, pin: pin, valid_until: validity})
+      case Memento.Query.select(Pin, query) do
+        [h | _t] ->
+          Memento.Query.delete_record(h)
+          true
+
+        _ ->
+          false
+      end
     end)
   end
 
@@ -120,11 +110,11 @@ defmodule SmsUp.Pin.Store do
     Memento.Table.create(SmsUp.Db.Pin)
   end
 
-  defp get_pin_validity(state) do
-    Keyword.get(state, :pin_validity, 30) * @seconds_to_minute
+  defp get_pin_validity do
+    Application.get_env(:sms_up, :pin_validity, 30)
   end
 
-  defp get_pin_size(state) do
-    Keyword.get(state, :pin_size, 6)
+  defp get_pin_size do
+    Application.get_env(:sms_up, :pin_size, 6)
   end
 end
