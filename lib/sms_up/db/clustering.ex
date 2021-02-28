@@ -16,12 +16,14 @@ defmodule SmsUp.Db.Clustering do
   end
 
   def handle_info({:nodeup, node}, nodes) do
+    Logger.info("Add #{node} to the cluster")
     nodes = [node | nodes]
     :mnesia.change_config(:extra_db_nodes, [node])
     {:noreply, nodes}
   end
 
   def handle_info({:nodedown, node}, nodes) do
+    Logger.info("#{node} left the cluster")
     nodes = nodes |> Enum.filter(&(&1 !== node))
     {:noreply, nodes}
   end
