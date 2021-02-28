@@ -9,22 +9,19 @@ defmodule SmsUp.Db.Clustering do
 
   def init(_args) do
     Logger.info("Starting Mnesia Cluster Manager")
-    nodes = [node() | Node.list()]
-    Memento.start()
     :net_kernel.monitor_nodes(true)
-    {:ok, nodes}
+    Memento.start()
+    {:ok, nil}
   end
 
-  def handle_info({:nodeup, node}, nodes) do
+  def handle_info({:nodeup, node}, _) do
     Logger.info("Add #{node} to the cluster")
-    nodes = [node | nodes]
     :mnesia.change_config(:extra_db_nodes, [node])
-    {:noreply, nodes}
+    {:noreply, nil}
   end
 
-  def handle_info({:nodedown, node}, nodes) do
+  def handle_info({:nodedown, node}, _) do
     Logger.info("#{node} left the cluster")
-    nodes = nodes |> Enum.filter(&(&1 !== node))
-    {:noreply, nodes}
+    {:noreply, nil}
   end
 end
