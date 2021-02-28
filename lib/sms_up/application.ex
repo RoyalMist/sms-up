@@ -7,7 +7,7 @@ defmodule SmsUp.Application do
   @spec start(any, any) :: {:error, any} | {:ok, pid}
   def start(_type, _args) do
     children = [
-      SmsUp.Pin.Db.Clustering,
+      SmsUp.Db.Clustering,
       {SmsUp.Pin.Store, [pin_validity: get_pin_validity(), pin_size: get_pin_size()]}
     ]
 

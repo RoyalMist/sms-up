@@ -3,7 +3,7 @@ defmodule SmsUp.Pin.Store do
   use GenServer
   require Logger
   alias SmsUp.Pin.Generator
-  alias SmsUp.Pin.Db.Pin
+  alias SmsUp.Db.Pin
 
   @moduledoc """
   This module stores random pin associated with an id to be checked later.
@@ -117,7 +117,7 @@ defmodule SmsUp.Pin.Store do
   end
 
   defp ensure_db_up() do
-    Memento.Table.create(SmsUp.Pin.Db.Pin)
+    Memento.Table.create(SmsUp.Db.Pin)
   end
 
   defp get_pin_validity(state) do

@@ -1,4 +1,4 @@
-defmodule SmsUp.Pin.Db.Clustering do
+defmodule SmsUp.Db.Clustering do
   @moduledoc false
   use GenServer
   require Logger
