@@ -59,13 +59,16 @@ defmodule SmsUp.Delivery.SmsUpDelivery do
     case HTTPoison.get(
            make_uri(to, body, options),
            Authorization: "Bearer #{get_api_key()}",
-           Accept: "Application/json; Charset=utf-8"
+           Accept: "Application/json; Charset=utf-8",
+           hackney: [:insecure]
          ) do
       {:ok, res} ->
         ["{\"status\":" <> code | _] = String.split(res.body, ",")
 
         case code do
-          "1" -> {:ok, %{to: to, body: body, options: options}}
+          "1" ->
+            {:ok, %{to: to, body: body, options: options}}
+
           status ->
             Logger.error(res.body)
             @error_status[status]
