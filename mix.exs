@@ -6,7 +6,7 @@ defmodule SmsUp.MixProject do
       app: :sms_up,
       elixir: "~> 1.11",
       version: "1.0.6",
-      source_url: "https://github.com/RoyalMist/sms_up",
+      source_url: "https://github.com/RoyalMist/sms-up",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
@@ -38,7 +38,7 @@ defmodule SmsUp.MixProject do
     [
       name: "sms_up",
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/RoyalMist/sms_up"}
+      links: %{"GitHub" => "https://github.com/RoyalMist/sms-up"}
     ]
   end
 end
