@@ -9,8 +9,7 @@ This package permits to send sms and generate some One Time Password stored in m
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `sms_up` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `sms_up` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -21,5 +20,6 @@ end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/sms_up](https://hexdocs.pm/sms_up).
+and published on [HexDocs](https://hexdocs.pm). 
+
+The docs can be found at [https://hexdocs.pm/sms_up](https://hexdocs.pm/sms_up).
