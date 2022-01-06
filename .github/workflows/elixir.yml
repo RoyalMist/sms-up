@@ -141,6 +141,7 @@ jobs:
           author_name: RoyalMist
           author_email: thibault.fouache@gmail.com
           message: "Your commit message"
+          branch: master
           pathspec_error_handling: ignore
           pull: "NO-PULL"
       - name: Retrieve Cached Backend Dependencies
