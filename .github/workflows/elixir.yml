@@ -75,7 +75,7 @@ jobs:
             _build
           key: test-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('mix.lock') }}
       - name: Generate Doc
-        run: mix doc
+        run: mix docs
       - name: Tar Doc
         run: tar -cf doc.tar ./doc
       - name: Archive Doc
