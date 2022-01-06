@@ -117,6 +117,9 @@ jobs:
   publish:
     if: ${{ contains(github.ref, 'refs/tags/') }}
     name: Publish to HEX
+    needs:
+      - analysis
+      - tests
     runs-on: ubuntu-20.04
     env:
       MIX_ENV: prod
