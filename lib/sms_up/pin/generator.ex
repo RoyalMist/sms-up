@@ -35,8 +35,7 @@ defmodule SmsUp.Pin.Generator do
     pin =
       0..9
       |> Enum.take_random(size)
-      |> Enum.map(&Integer.to_string/1)
-      |> Enum.join()
+      |> Enum.map_join(&Integer.to_string/1)
 
     {:ok, pin}
   end
