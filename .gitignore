@@ -10,3 +10,4 @@ erl_crash.dump
 *.ez
 sms_up-*.tar
 /tmp
+*.back

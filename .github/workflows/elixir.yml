@@ -14,7 +14,7 @@ env:
   MIX_ENV: test
 
 jobs:
-  dependencies:
+  test-dependencies:
     name: Dependencies
     runs-on: ubuntu-20.04
     steps:
@@ -53,7 +53,7 @@ jobs:
 
   analysis:
     name: Static Code Analysis
-    needs: dependencies
+    needs: test-dependencies
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -91,7 +91,7 @@ jobs:
 
   tests:
     name: Unit Tests
-    needs: dependencies
+    needs: test-dependencies
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -113,3 +113,47 @@ jobs:
           key: test-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('mix.lock') }}
       - name: Run test
         run: mix test --trace --slowest 10
+
+  publish:
+    if: ${{ contains(github.ref, 'refs/tags/') }}
+    name: Publish to HEX
+    runs-on: ubuntu-20.04
+    env:
+      MIX_ENV: prod
+    steps:
+      - name: Tag
+        id: tagName
+        uses: olegtarasov/get-tag@v2.1
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set version
+        run: |
+          sed -i 's/version: "[0-9]\.[0-9]\.[0-9]"/version: "${{ steps.tagName.outputs.tag }}"/g' hello.txt
+      - name: Commit version
+        uses: EndBug/add-and-commit@v7
+        with:
+          add: "mix.exs"
+          author_name: RoyalMist
+          author_email: thibault.fouache@gmail.com
+          message: "Your commit message"
+          pathspec_error_handling: ignore
+          pull: "NO-PULL"
+      - name: Retrieve Cached Backend Dependencies
+        uses: actions/cache@v2
+        id: mix-prod-cache
+        with:
+          path: |
+            deps
+            _build
+          key: prod-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('mix.lock') }}
+      - name: Install Backend Dependencies
+        if: steps.mix-prod-cache.outputs.cache-hit != 'true'
+        run: mix do deps.get --only prod, deps.compile
+      - name: Doc
+        run: mix docs
+      - name: Build
+        run: mix compile
+      - name: Publish
+        run: HEX_API_KEY=${{env.HEX_API_KEY}} mix hex.publish --yes
