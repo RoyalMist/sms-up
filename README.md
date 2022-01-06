@@ -1,4 +1,8 @@
-# SmsUp
+SmsUp
+========
+[![Hex.pm](https://img.shields.io/hexpm/v/sms_up.svg)](https://hex.pm/packages/sms_up)
+
+Use to send sms and validate phone numbers.
 
 [SmsUP](https://smsup.ch) is a Swiss platform for sending sms.
 This package permits to send sms and generate some One Time Password stored in memory for a given time.
@@ -11,7 +15,7 @@ by adding `sms_up` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:sms_up, "~> 0.1.0"}
+    {:sms_up, "~> x.x.x"}
   ]
 end
 ```

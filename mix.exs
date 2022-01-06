@@ -26,7 +26,10 @@ defmodule SmsUp.MixProject do
       {:memento, "~> 0.3"},
       {:httpoison, "~> 1.8"},
       {:ex_phone_number, "~> 0.2"},
-      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.26", only: :dev, runtime: false},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.11", only: [:dev, :test], runtime: false}
     ]
   end
 
