@@ -53,7 +53,7 @@ jobs:
 
   docs:
     if: ${{ contains(github.ref, 'refs/tags/') }}
-    name: Static Code Analysis
+    name: Documentation
     needs: test-dependencies
     runs-on: ubuntu-20.04
     steps:
@@ -75,7 +75,7 @@ jobs:
             _build
           key: test-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('mix.lock') }}
       - name: Generate Doc
-        run: mix docs
+        run: mix doc
       - name: Tar Doc
         run: tar -cf doc.tar ./doc
       - name: Archive Doc
