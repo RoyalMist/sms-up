@@ -131,10 +131,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Download Doc
-        uses: actions/download-artifact@v2
-        with:
-          name: docs
       - name: Setup
         uses: erlef/setup-elixir@v1
         with:
