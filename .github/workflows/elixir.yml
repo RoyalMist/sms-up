@@ -154,6 +154,7 @@ jobs:
     needs:
       - analysis
       - tests
+      - docs
     runs-on: ubuntu-20.04
     env:
       MIX_ENV: prod
