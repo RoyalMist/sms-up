@@ -143,24 +143,13 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           add: "mix.exs"
-          author_name: RoyalMist
-          author_email: thibault.fouache@gmail.com
           message: "Your commit message"
           branch: master
           pathspec_error_handling: ignore
           pull: "NO-PULL"
-      - name: Retrieve Cached Backend Dependencies
-        uses: actions/cache@v2
-        id: mix-prod-cache
-        with:
-          path: |
-            deps
-            _build
-          key: prod-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('mix.lock') }}
       - name: Install Backend Dependencies
-        if: steps.mix-prod-cache.outputs.cache-hit != 'true'
         run: mix do deps.get --only prod, deps.compile
       - name: Build
         run: mix compile
       - name: Publish
-        run: HEX_API_KEY=${{env.HEX_API_KEY}} mix hex.publish --yes
+        run: HEX_API_KEY=${{secrets.HEX_API_KEY}} mix hex.publish --yes
