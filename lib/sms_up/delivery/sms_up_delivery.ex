@@ -65,7 +65,9 @@ defmodule SmsUp.Delivery.SmsUpDelivery do
         ["{\"status\":" <> code | _] = String.split(res.body, ",")
 
         case code do
-          "1" -> {:ok, %{to: to, body: body, options: options}}
+          "1" ->
+            {:ok, %{to: to, body: body, options: options}}
+
           status ->
             Logger.error(res.body)
             @error_status[status]

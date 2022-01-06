@@ -38,5 +38,6 @@ defmodule SmsUp.Sender do
   end
 
   @doc false
-  defdelegate deliver(number, text, options), to: Application.get_env(:sms_up, :deliver_module, SmsUp.Delivery.LoggerDelivery)
+  defdelegate deliver(number, text, options),
+    to: Application.get_env(:sms_up, :deliver_module, SmsUp.Delivery.LoggerDelivery)
 end
