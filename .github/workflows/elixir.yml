@@ -133,7 +133,7 @@ jobs:
           fetch-depth: 0
       - name: Set version
         run: |
-          sed -i 's/version: "[0-9]\.[0-9]\.[0-9]"/version: "${{ steps.tagName.outputs.tag }}"/g' hello.txt
+          sed -i 's/version: "[0-9]\.[0-9]\.[0-9]"/version: "${{ steps.tagName.outputs.tag }}"/g' mix.exs
       - name: Commit version
         uses: EndBug/add-and-commit@v7
         with:
