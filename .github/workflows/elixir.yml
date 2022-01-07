@@ -139,6 +139,12 @@ jobs:
       - name: Set version
         run: |
           sed -i 's/version: "[0-9]\.[0-9]\.[0-9]"/version: "${{ steps.tagName.outputs.tag }}"/g' mix.exs
+      - name: Install Backend Dependencies
+        run: mix do deps.get --only prod, deps.compile
+      - name: Build
+        run: mix compile
+      - name: Publish
+        run: HEX_API_KEY=${{secrets.HEX_API_KEY}} mix hex.publish --yes
       - name: Commit version
         uses: EndBug/add-and-commit@v7
         with:
@@ -147,9 +153,3 @@ jobs:
           branch: master
           pathspec_error_handling: ignore
           pull: "NO-PULL"
-      - name: Install Backend Dependencies
-        run: mix do deps.get --only prod, deps.compile
-      - name: Build
-        run: mix compile
-      - name: Publish
-        run: HEX_API_KEY=${{secrets.HEX_API_KEY}} mix hex.publish --yes
