@@ -14,7 +14,7 @@ env:
   MIX_ENV: test
 
 jobs:
-  test-dependencies:
+  dependencies:
     name: Dependencies
     runs-on: ubuntu-20.04
     steps:
@@ -53,7 +53,7 @@ jobs:
 
   analysis:
     name: Static Code Analysis
-    needs: test-dependencies
+    needs: dependencies
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -91,7 +91,7 @@ jobs:
 
   tests:
     name: Unit Tests
-    needs: test-dependencies
+    needs: dependencies
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
