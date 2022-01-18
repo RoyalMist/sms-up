@@ -10,7 +10,8 @@ defmodule SmsUp.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
-      package: package()
+      package: package(),
+      dialyzer: [plt_add_deps: :app_tree]
     ]
   end
 
