@@ -47,6 +47,7 @@ defmodule SmsUp do
       {:ok, %{to: "+41765556677", body: "message"}}
   """
   @spec send_sms(String.t(), String.t(), Keyword.t()) ::
-          {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
+          {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
+          | {:error, String.t()}
   defdelegate send_sms(number, text, options \\ []), to: SmsUp.Sender
 end

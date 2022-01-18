@@ -54,7 +54,8 @@ defmodule SmsUp.Delivery.SmsUpDelivery do
 
   @impl true
   @spec deliver(String.t(), String.t(), Keyword.t()) ::
-          {:error, String.t()} | {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
+          {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
+          | {:error, String.t()}
   def deliver(to, body, options) when is_binary(to) and is_binary(body) do
     case HTTPoison.get(
            make_uri(to, body, options),

@@ -26,7 +26,8 @@ defmodule SmsUp.Delivery.LoggerDelivery do
   """
   @impl true
   @spec deliver(String.t(), String.t(), Keyword.t()) ::
-          {:error, String.t()} | {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
+          {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
+          | {:error, String.t()}
   def deliver(to, body, options \\ []) when is_binary(to) and is_binary(body) do
     options_to_print =
       for {k, v} <- options do

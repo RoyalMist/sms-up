@@ -28,7 +28,8 @@ defmodule SmsUp.Sender do
       {:error, "Hello is not a valid number"}
   """
   @spec send_sms(String.t(), String.t(), Keyword.t()) ::
-          {:error, String.t()} | {:ok, %{body: String.t(), to: String.t()}}
+          {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
+          | {:error, String.t()}
   def send_sms(number, text, options \\ []) when is_binary(number) and is_binary(text) do
     if PhoneValidator.is_valid_number?(number) do
       deliver(number, text, options)
@@ -37,7 +38,9 @@ defmodule SmsUp.Sender do
     end
   end
 
-  @doc false
+  @spec deliver(String.t(), String.t(), Keyword.t()) ::
+          {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
+          | {:error, String.t()}
   defdelegate deliver(number, text, options),
     to: Application.get_env(:sms_up, :deliver_module, SmsUp.Delivery.LoggerDelivery)
 end
