@@ -111,7 +111,7 @@ defmodule SmsUp.Pin.Store do
   end
 
   defp get_pin_validity do
-    Application.get_env(:sms_up, :pin_validity, 30)
+    Application.get_env(:sms_up, :pin_validity, 30) * 60
   end
 
   defp get_pin_size do

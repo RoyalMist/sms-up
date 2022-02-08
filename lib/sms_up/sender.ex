@@ -42,5 +42,5 @@ defmodule SmsUp.Sender do
           {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
           | {:error, String.t()}
   defdelegate deliver(number, text, options),
-    to: Application.get_env(:sms_up, :deliver_module, SmsUp.Delivery.LoggerDelivery)
+    to: Application.get_env(:sms_up, :deliver_module)
 end

@@ -100,8 +100,7 @@ defmodule SmsUp.Delivery.SmsUpDelivery do
   defp get_api_key do
     Application.get_env(
       :sms_up,
-      :api_key,
-      "SET_ME"
+      :api_key
     )
   end
 end

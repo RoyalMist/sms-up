@@ -37,10 +37,10 @@ defmodule SmsUp.Delivery.LoggerDelivery do
     case Keyword.get(options, :force_error) do
       nil ->
         Logger.info("""
-        SMS
-        To : #{to}
-        Body: #{body}
-        #{options_to_print}
+          SMS
+          To : #{to}
+          Body: #{body}
+          #{options_to_print}
         """)
 
         {:ok, %{to: to, body: body, options: options}}
