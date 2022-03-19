@@ -126,7 +126,7 @@ jobs:
     steps:
       - name: Tag
         id: tagName
-        uses: olegtarasov/get-tag@v2.1
+        uses: olegtarasov/get-tag@v2.1.1
       - name: Checkout
         uses: actions/checkout@v2
         with:
