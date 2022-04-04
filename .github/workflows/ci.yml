@@ -2,11 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     tags:
       - "*"
   pull_request:
-    branches: [master]
+    branches: [main]
 
 env:
   ELIXIR_VERSION: 1.13
