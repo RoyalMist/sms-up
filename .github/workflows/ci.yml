@@ -150,6 +150,4 @@ jobs:
         with:
           add: "mix.exs"
           message: "Bump to version ${{ steps.tagName.outputs.tag }}"
-          branch: main
           pathspec_error_handling: ignore
-          pull: "NO-PULL"
