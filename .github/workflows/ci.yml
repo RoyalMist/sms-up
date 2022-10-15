@@ -9,17 +9,17 @@ on:
     branches: [main]
 
 env:
-  ELIXIR_VERSION: 1.13
-  OTP_VERSION: 24.1
+  ELIXIR_VERSION: 1.14
+  OTP_VERSION: 25.1
   MIX_ENV: test
 
 jobs:
   dependencies:
     name: Dependencies
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Elixir Setup
@@ -28,7 +28,7 @@ jobs:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
       - name: Retrieve Cached Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: mix-deps-cache
         with:
           path: |
@@ -39,7 +39,7 @@ jobs:
         if: steps.mix-deps-cache.outputs.cache-hit != 'true'
         run: mix do deps.get, deps.compile
       - name: Retrieve Cached PLT
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: mix-plt-cache
         with:
           path: |
@@ -54,10 +54,10 @@ jobs:
   analysis:
     name: Static Code Analysis
     needs: dependencies
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Setup
@@ -66,7 +66,7 @@ jobs:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
       - name: Retrieve Cached Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: mix-deps-cache
         with:
           path: |
@@ -74,7 +74,7 @@ jobs:
             _build
           key: deps-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('mix.lock') }}
       - name: Retrieve Cached PLT
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: mix-plt-cache
         with:
           path: |
@@ -92,10 +92,10 @@ jobs:
   tests:
     name: Unit Tests
     needs: dependencies
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Setup
@@ -104,7 +104,7 @@ jobs:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
       - name: Retrieve Cached Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: mix-deps-cache
         with:
           path: |
@@ -120,7 +120,7 @@ jobs:
     needs:
       - analysis
       - tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       MIX_ENV: prod
     steps:
@@ -128,7 +128,7 @@ jobs:
         id: tagName
         uses: olegtarasov/get-tag@v2.1.1
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Setup
@@ -146,7 +146,7 @@ jobs:
       - name: Publish
         run: HEX_API_KEY=${{secrets.HEX_API_KEY}} mix hex.publish --yes
       - name: Commit version
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
           add: "mix.exs"
           message: "Bump to version ${{ steps.tagName.outputs.tag }}"
