@@ -61,7 +61,7 @@ defmodule SmsUp.Pin.Store do
 
     case Generator.generate_pin(get_pin_size()) do
       {:ok, pin} ->
-        validity = utc_now() |> add(get_pin_validity())
+        validity = utc_now() |> add(get_pin_validity(), :minute)
 
         Memento.transaction(fn ->
           Memento.Query.write(%Pin{id: id, pin: pin, valid_until: validity})
@@ -111,7 +111,7 @@ defmodule SmsUp.Pin.Store do
   end
 
   defp get_pin_validity do
-    Application.get_env(:sms_up, :pin_validity, 60) * 60
+    Application.get_env(:sms_up, :pin_validity, 15)
   end
 
   defp get_pin_size do
