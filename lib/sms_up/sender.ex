@@ -42,14 +42,12 @@ defmodule SmsUp.Sender do
           {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
           | {:error, String.t()}
   def deliver(number, text, options) do
-    apply(
-      Application.get_env(:sms_up, :deliver_module, SmsUp.Delivery.LoggerDelivery),
-      :deliver,
-      [
-        number,
-        text,
-        options
-      ]
-    )
+    module = Application.get_env(:sms_up, :deliver_module, SmsUp.Delivery.LoggerDelivery)
+
+    try do
+      module.deliver(number, text, options)
+    rescue
+      e in RuntimeError -> {:error, "Unable to use #{module} with: #{inspect(e)}"}
+    end
   end
 end
