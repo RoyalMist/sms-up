@@ -96,9 +96,9 @@ jobs:
       MIX_ENV: prod
     steps:
       - id: tagName
-        uses: olegtarasov/get-tag@v2.1.1
+        uses: olegtarasov/get-tag@v2.1.2
       - uses: actions/checkout@v3
-      - uses: erlef/setup-elixir@v1
+      - uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
@@ -120,9 +120,3 @@ jobs:
         run: mix compile --warnings-as-errors
       - name: Publish
         run: HEX_API_KEY=${{secrets.HEX_API_KEY}} mix hex.publish --yes
-      - name: Commit version
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: "mix.exs"
-          message: "Bump to version ${{ steps.tagName.outputs.tag }}"
-          pathspec_error_handling: ignore
