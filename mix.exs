@@ -30,7 +30,8 @@ defmodule SmsUp.MixProject do
       {:ex_doc, "~> 0.26", runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.11", only: [:dev, :test], runtime: false}
+      {:sobelow, "~> 0.11", only: [:dev, :test], runtime: false},
+      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false}
     ]
   end
 
