@@ -5,7 +5,8 @@
 /deps/
 /doc/
 /Mnesia.*/
-/.fetch
+/.fetch/
+/.elixir-tools/
 erl_crash.dump
 *.ez
 sms_up-*.tar
