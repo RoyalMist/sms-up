@@ -124,7 +124,7 @@ jobs:
         run: mix test
 
   publish:
-    if: ${{ contains(github.ref, 'refs/tags/') }}
+    if: contains(github.ref, 'refs/tags/')
     name: Publish to HEX
     needs: test
     runs-on: ubuntu-latest
