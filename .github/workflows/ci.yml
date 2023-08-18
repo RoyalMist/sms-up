@@ -86,9 +86,6 @@ jobs:
 
   test:
     name: Test
-    needs:
-      - lint
-      - build
     runs-on: ubuntu-latest
     env:
       MIX_ENV: test
@@ -128,6 +125,9 @@ jobs:
   publish:
     if: ${{ contains(github.ref, 'refs/tags/') }}
     name: Publish to HEX
+    needs:
+      - lint
+      - test
     runs-on: ubuntu-latest
     env:
       MIX_ENV: prod
