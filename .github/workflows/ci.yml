@@ -8,9 +8,12 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 env:
   OTP_VERSION: 26.0
-  ELIXIR_VERSION: 1.15.0
+  ELIXIR_VERSION: 1.15.4
 
 jobs:
   lint:
@@ -24,98 +27,145 @@ jobs:
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
-      - name: Check Dependencies Cache
-        uses: actions/cache@v3
-        id: mix-deps-cache
+      - name: Restore Deps cache
+        uses: actions/cache/restore@v3
+        id: test-cache
         with:
-          key: deps-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+          restore-keys: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
-      - name: Install Dependencies
-        if: steps.mix-deps-cache.outputs.cache-hit != 'true'
+      - name: Fetch & Compile Deps
+        if: steps.test-cache.outputs.cache-hit != 'true'
         run: mix do deps.get, deps.compile
-      - name: Check PLTs Cache
-        uses: actions/cache/restore@v3
-        id: mix-plt-cache
+      - name: Save Deps cache
+        uses: actions/cache/save@v3
+        if: steps.test-cache.outputs.cache-hit != 'true'
+        id: test-cache-save
         with:
-          key: plt-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-          path: priv/plts
-      - name: Create PLTs
-        if: steps.mix-plt-cache.outputs.cache-hit != 'true'
+          key: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+          path: |
+            deps
+            _build
+      - name: Restore PLT cache
+        uses: actions/cache/restore@v3
+        id: plt-cache
+        with:
+          key: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+          restore-keys: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+          path: |
+            priv/plts
+      - name: Build PLT
+        if: steps.plt-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p priv/plts
           mix dialyzer --plt
-      - name: Save PLTs Cache
+      - name: Save PLT cache
         uses: actions/cache/save@v3
-        if: steps.mix-plt-cache.outputs.cache-hit != 'true'
+        if: steps.plt-cache.outputs.cache-hit != 'true'
+        id: plt-cache-save
         with:
-          key: plt-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-          path: priv/plts
+          key: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+          path: |
+            priv/plts
       - name: Check Code Format
         run: mix format --dry-run --check-formatted
       - name: Security
         run: mix do hex.audit, deps.audit, sobelow
       - name: Run Credo
-        run: mix credo
+        run: mix credo list --all
       - name: Run Dialyzer
-        run: mix dialyzer --no-check --format dialyxir --ignore-exit-status
+        run: mix dialyzer --no-check --format github --ignore-exit-status
 
   test:
-    name: Unit Tests
-    needs: lint
+    name: Test
+    needs:
+      - lint
+      - build
+    runs-on: ubuntu-latest
     env:
       MIX_ENV: test
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
-      - name: Check Dependencies Cache
-        uses: actions/cache@v3
-        id: mix-deps-cache
+      - name: Restore Deps cache
+        uses: actions/cache/restore@v3
+        id: test-cache
         with:
-          key: deps-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+          restore-keys: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
-      - name: Install Dependencies
-        if: steps.mix-deps-cache.outputs.cache-hit != 'true'
+      - name: Fetch & Compile Deps
+        if: steps.test-cache.outputs.cache-hit != 'true'
         run: mix do deps.get, deps.compile
+      - name: Save Deps cache
+        uses: actions/cache/save@v3
+        if: steps.test-cache.outputs.cache-hit != 'true'
+        id: test-cache-save
+        with:
+          key: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+          path: |
+            deps
+            _build
       - name: Run test
-        run: mix test --trace
+        run: mix test
 
   publish:
     if: ${{ contains(github.ref, 'refs/tags/') }}
     name: Publish to HEX
-    needs: test
     runs-on: ubuntu-latest
     env:
       MIX_ENV: prod
     steps:
+      - uses: actions/checkout@v3
       - id: tagName
         uses: olegtarasov/get-tag@v2.1.2
-      - uses: actions/checkout@v3
+      - name: Set version
+        run: |
+          sed -i 's/version: "[0-9]\.[0-9]\.[0-9]"/version: "${{ steps.tagName.outputs.tag }}"/g' mix.exs
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
           otp-version: ${{ env.OTP_VERSION }}
-      - name: Set version
-        run: |
-          sed -i 's/version: "[0-9]\.[0-9]\.[0-9]"/version: "${{ steps.tagName.outputs.tag }}"/g' mix.exs
-      - name: Restore dependencies cache
-        id: mix-deps-cache
-        uses: actions/cache@v3
+      - name: Restore Deps cache
+        uses: actions/cache/restore@v3
+        id: prod-cache
         with:
+          key: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
+          restore-keys: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
           path: |
             deps
             _build
-          key: prod-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-      - name: Install Dependencies
-        if: steps.mix-deps-cache.outputs.cache-hit != 'true'
+      - name: Fetch & Compile Deps
+        if: steps.prod-cache.outputs.cache-hit != 'true'
         run: mix do deps.get --only prod, deps.compile
+      - name: Save Deps cache
+        uses: actions/cache/save@v3
+        if: steps.prod-cache.outputs.cache-hit != 'true'
+        id: prod-cache-save
+        with:
+          key: |
+            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
+          path: |
+            deps
+            _build
       - name: Build
         run: mix compile --warnings-as-errors
       - name: Publish

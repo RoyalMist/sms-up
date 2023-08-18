@@ -2,8 +2,8 @@ defmodule SmsUp.Pin.Store do
   import NaiveDateTime
   use GenServer
   require Logger
-  alias SmsUp.Pin.Generator
   alias SmsUp.Db.Pin
+  alias SmsUp.Pin.Generator
 
   @moduledoc """
   This module stores random pin associated with an id to be checked later.
@@ -106,7 +106,7 @@ defmodule SmsUp.Pin.Store do
     end)
   end
 
-  defp ensure_db_up() do
+  defp ensure_db_up do
     Memento.Table.create(SmsUp.Db.Pin)
   end
 
