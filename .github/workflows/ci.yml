@@ -23,7 +23,6 @@ jobs:
     env:
       MIX_ENV: test
     steps:
-      - run: echo ${{ env.CACHE_PREFIX }}
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
         with:
@@ -34,9 +33,9 @@ jobs:
         id: test-cache
         with:
           key: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           restore-keys: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
@@ -49,7 +48,7 @@ jobs:
         id: test-cache-save
         with:
           key: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
@@ -58,9 +57,9 @@ jobs:
         id: plt-cache
         with:
           key: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
           restore-keys: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
           path: |
             priv/plts
       - name: Build PLT
@@ -74,7 +73,7 @@ jobs:
         id: plt-cache-save
         with:
           key: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
           path: |
             priv/plts
       - name: Check Code Format
@@ -103,9 +102,9 @@ jobs:
         id: test-cache
         with:
           key: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           restore-keys: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
@@ -118,7 +117,7 @@ jobs:
         id: test-cache-save
         with:
           key: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
@@ -148,9 +147,9 @@ jobs:
         id: prod-cache
         with:
           key: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
           restore-keys: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
           path: |
             deps
             _build
@@ -163,7 +162,7 @@ jobs:
         id: prod-cache-save
         with:
           key: |
-            ${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
+            ${{ env.CACHE_PREFIX }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
           path: |
             deps
             _build
