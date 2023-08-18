@@ -14,6 +14,7 @@ permissions:
 env:
   OTP_VERSION: 26.0
   ELIXIR_VERSION: 1.15.4
+  CACHE_PREFIX: ${{ contains(github.ref, 'refs/tags/') && 'main' || github.ref }}
 
 jobs:
   lint:
@@ -22,6 +23,7 @@ jobs:
     env:
       MIX_ENV: test
     steps:
+      - run: echo ${{ env.CACHE_PREFIX }}
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
         with:
