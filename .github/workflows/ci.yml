@@ -23,6 +23,8 @@ jobs:
       MIX_ENV: test
     steps:
       - uses: actions/checkout@v3
+      - uses: tj-actions/branch-names@v7
+        id: branch-name
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
@@ -32,9 +34,9 @@ jobs:
         id: test-cache
         with:
           key: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           restore-keys: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
@@ -47,7 +49,7 @@ jobs:
         id: test-cache-save
         with:
           key: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
@@ -56,9 +58,9 @@ jobs:
         id: plt-cache
         with:
           key: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
           restore-keys: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
           path: |
             priv/plts
       - name: Build PLT
@@ -72,7 +74,7 @@ jobs:
         id: plt-cache-save
         with:
           key: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-plt
           path: |
             priv/plts
       - name: Check Code Format
@@ -92,6 +94,8 @@ jobs:
       MIX_ENV: test
     steps:
       - uses: actions/checkout@v3
+      - uses: tj-actions/branch-names@v7
+        id: branch-name
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
@@ -101,9 +105,9 @@ jobs:
         id: test-cache
         with:
           key: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           restore-keys: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
@@ -116,7 +120,7 @@ jobs:
         id: test-cache-save
         with:
           key: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-test
           path: |
             deps
             _build
@@ -132,8 +136,10 @@ jobs:
       MIX_ENV: prod
     steps:
       - uses: actions/checkout@v3
-      - id: tagName
-        uses: olegtarasov/get-tag@v2.1.2
+      - uses: tj-actions/branch-names@v7
+        id: branch-name
+      - uses: olegtarasov/get-tag@v2.1.2
+        id: tagName
       - name: Set version
         run: |
           sed -i 's/version: "[0-9]\.[0-9]\.[0-9]"/version: "${{ steps.tagName.outputs.tag }}"/g' mix.exs
@@ -146,9 +152,9 @@ jobs:
         id: prod-cache
         with:
           key: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
           restore-keys: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
           path: |
             deps
             _build
@@ -161,7 +167,7 @@ jobs:
         id: prod-cache-save
         with:
           key: |
-            ${{ github.ref_name }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
+            ${{ steps.branch-name.outputs.current_branch }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-${{ hashFiles('**/mix.lock') }}-prod
           path: |
             deps
             _build
