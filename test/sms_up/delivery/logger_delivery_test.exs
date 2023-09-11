@@ -15,7 +15,7 @@ defmodule SmsUp.Delivery.LoggerDeliveryTest do
       assert result == {:ok, %{to: "+41765556677", body: "Hello", options: []}}
       assert log =~ "[info]"
       assert log =~ "SMS"
-      assert log =~ "To : +41765556677"
+      assert log =~ "To: +41765556677"
       assert log =~ "Body: Hello"
     end
 
@@ -28,7 +28,7 @@ defmodule SmsUp.Delivery.LoggerDeliveryTest do
       assert result == {:ok, %{to: "+41765556677", body: "Hello", options: [who: "John Doe"]}}
       assert log =~ "[info]"
       assert log =~ "SMS"
-      assert log =~ "To : +41765556677"
+      assert log =~ "To: +41765556677"
       assert log =~ "Body: Hello"
       assert log =~ "who: John Doe"
     end

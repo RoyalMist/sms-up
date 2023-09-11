@@ -38,7 +38,7 @@ defmodule SmsUp.Delivery.LoggerDelivery do
       nil ->
         Logger.info("""
           SMS
-          To : #{to}
+          To: #{to}
           Body: #{body}
           #{options_to_print}
         """)
