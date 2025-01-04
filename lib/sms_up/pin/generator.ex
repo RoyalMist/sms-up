@@ -12,11 +12,11 @@ defmodule SmsUp.Pin.Generator do
 
       iex> :rand.seed(:exsss, {10, 20, 30})
       iex> SmsUp.Pin.Generator.generate_pin()
-      {:ok, "831750"}
+      {:ok, "278950"}
 
       iex> :rand.seed(:exsss, {10, 20, 30})
       iex> SmsUp.Pin.Generator.generate_pin(4)
-      {:ok, "8317"}
+      {:ok, "4819"}
 
       iex> :rand.seed(:exsss, {10, 20, 30})
       iex> SmsUp.Pin.Generator.generate_pin(100)
