@@ -25,7 +25,7 @@ defmodule SmsUp.MixProject do
   defp deps do
     [
       {:memento, "~> 0.3"},
-      {:httpoison, "~> 1.8"},
+      {:httpoison, "~> 2.0"},
       {:ex_phone_number, "~> 0.2"},
       {:ex_doc, "~> 0.26", runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
