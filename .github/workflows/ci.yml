@@ -18,7 +18,7 @@ env:
 jobs:
   qa:
     name: QA
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       MIX_ENV: test
     steps:
@@ -55,9 +55,10 @@ jobs:
   build:
     name: BUILD
     needs: qa
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       MIX_ENV: prod
+      HEX_API_KEY: ${{secrets.HEX_API_KEY}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -88,4 +89,4 @@ jobs:
         run: mix compile --warnings-as-errors
       - name: Publish
         if: contains(github.ref, 'refs/tags/')
-        run: HEX_API_KEY=${{secrets.HEX_API_KEY}} mix hex.publish --yes
+        run: mix hex.publish --yes
