@@ -81,7 +81,7 @@ jobs:
         run: mix deps.get --only prod
       - name: Get branch name
         if: contains(github.ref, 'refs/tags/')
-        uses: tj-actions/branch-names@v7
+        uses: tj-actions/branch-names@v8
         id: branch-name
       - name: Set version
         if: contains(github.ref, 'refs/tags/')
