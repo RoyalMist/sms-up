@@ -76,7 +76,6 @@ defmodule SmsUp.Delivery.SmsUpDelivery do
       err ->
         {:error, "unexpected error: #{inspect(err)}"}
     end
-    |> dbg
   end
 
   @doc false
