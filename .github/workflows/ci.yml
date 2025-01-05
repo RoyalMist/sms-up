@@ -43,8 +43,10 @@ jobs:
         run: mix format --dry-run --check-formatted
       - name: Check unused deps
         run: mix deps.unlock --check-unused
+      - name: Hex audit
+        run: mix hex.audit
       - name: Deps audit
-        run: mix do hex.audit, deps.audits
+        run: mix deps.audit
       - name: Run Credo
         run: mix credo
       - name: Run Sobelow
