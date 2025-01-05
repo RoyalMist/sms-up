@@ -23,7 +23,7 @@ jobs:
     env:
       MIX_ENV: test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
@@ -92,7 +92,7 @@ jobs:
     env:
       MIX_ENV: test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ env.ELIXIR_VERSION }}
@@ -132,7 +132,7 @@ jobs:
     env:
       MIX_ENV: prod
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: tj-actions/branch-names@v7
         id: branch-name
       - name: Set version
