@@ -44,7 +44,7 @@ jobs:
       - name: Check unused deps
         run: mix deps.unlock --check-unused
       - name: Deps audit
-        run: mix do deps.audit, hex.audit
+        run: mix do hex.audit, deps.audits
       - name: Run Credo
         run: mix credo
       - name: Run Sobelow
