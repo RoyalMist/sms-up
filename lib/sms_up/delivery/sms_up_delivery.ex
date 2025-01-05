@@ -51,31 +51,30 @@ defmodule SmsUp.Delivery.SmsUpDelivery do
       iex> SmsUp.Delivery.SmsUpDelivery.deliver("+41765556677", "Hello", [sender: "Company"])
       {:ok, %{to: "+41765556677", body: "Hello", options: [sender: "Company"]}}
   """
-
   @impl true
   @spec deliver(String.t(), String.t(), Keyword.t()) ::
           {:ok, %{body: String.t(), to: String.t(), options: Keyword.t()}}
           | {:error, String.t()}
-  def deliver(to, body, options) when is_binary(to) and is_binary(body) do
-    case HTTPoison.get(
-           make_uri(to, body, options),
-           Authorization: "Bearer #{get_api_key()}",
-           Accept: "Application/json; Charset=utf-8"
-         ) do
-      {:ok, res} ->
-        ["{\"status\":" <> code | _] = String.split(res.body, ",")
+  def deliver(to, body, options \\ []) when is_binary(to) and is_binary(body) do
+    with {:ok, res} <-
+           Req.get(
+             make_uri(to, body, options),
+             auth:
+               {:bearer,
+                Application.get_env(
+                  :sms_up,
+                  :api_key
+                )}
+           ),
+         [_, status_code | _] <- Regex.run(~r/<status>(.*?)<\/status>/, res.body),
+         "1" <- status_code do
+      {:ok, %{to: to, body: body, options: options}}
+    else
+      status when is_binary(status) ->
+        {:error, @error_status[status]}
 
-        case code do
-          "1" ->
-            {:ok, %{to: to, body: body, options: options}}
-
-          status ->
-            Logger.error(res.body)
-            @error_status[status]
-        end
-
-      error ->
-        error
+      err ->
+        {:error, "unexpected error: #{inspect(err)}"}
     end
   end
 
@@ -95,12 +94,5 @@ defmodule SmsUp.Delivery.SmsUpDelivery do
       |> Enum.reduce("", &(&2 <> &1))
 
     URI.encode(uri <> options)
-  end
-
-  defp get_api_key do
-    Application.get_env(
-      :sms_up,
-      :api_key
-    )
   end
 end
