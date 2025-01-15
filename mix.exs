@@ -27,7 +27,7 @@ defmodule SmsUp.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.36", runtime: false},
       {:ex_phone_number, "~> 0.4"},
-      {:memento, "~> 0.4"},
+      {:memento, "~> 0.5"},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:req, "~> 0.5"},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
