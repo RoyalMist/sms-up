@@ -9,33 +9,40 @@ on:
 permissions:
   contents: read
 env:
-  OTP_VERSION: 27.3.2
-  ELIXIR_VERSION: 1.18.3
+  SHELL: /bin/bash
 jobs:
-  qa:
-    name: QA
+  tools:
+    name: TOOLS
     runs-on: ubuntu-24.04
-    env:
-      MIX_ENV: test
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up Elixir
-        uses: erlef/setup-beam@v1
-        with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
-      - name: Restore build cache
+      - name: Set up tools
+        uses: jdx/mise-action@v2
+  lint:
+    name: LINT
+    needs: [tools]
+    runs-on: ubuntu-24.04
+    env:
+      MIX_ENV: dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up tools
+        uses: jdx/mise-action@v2
+      - name: Cache
         uses: actions/cache@v4
         with:
           path: |
             deps
             _build
-          key: ${{ env.MIX_ENV }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ env.MIX_ENV }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-
+          key: ${{ hashFiles('**/mise.toml') }}-${{ env.MIX_ENV }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ hashFiles('**/mise.toml') }}-${{ env.MIX_ENV }}-mix-
       - name: Install dependencies
         run: mix deps.get
-      - name: Check Code Format
+      - name: Compile without warnings
+        run: mix compile --warnings-as-errors
+      - name: Check code format
         run: mix format --dry-run --check-formatted
       - name: Check unused deps
         run: mix deps.unlock --check-unused
@@ -43,15 +50,36 @@ jobs:
         run: mix hex.audit
       - name: Deps audit
         run: mix deps.audit
-      - name: Run Credo
+      - name: Run credo
         run: mix credo
-      - name: Run Sobelow
+      - name: Run sobelow
         run: mix sobelow --config
+  test:
+    name: TEST
+    needs: [tools]
+    runs-on: ubuntu-24.04
+    env:
+      MIX_ENV: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up tools
+        uses: jdx/mise-action@v2
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ hashFiles('**/mise.toml') }}-${{ env.MIX_ENV }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ hashFiles('**/mise.toml') }}-${{ env.MIX_ENV }}-mix-
+      - name: Install dependencies
+        run: mix deps.get
       - name: Run tests
         run: mix test --max-failures=1 --color
   build:
     name: BUILD
-    needs: qa
+    needs: [lint, test]
     runs-on: ubuntu-24.04
     env:
       MIX_ENV: prod
@@ -59,19 +87,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up Elixir
-        uses: erlef/setup-beam@v1
-        with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
-      - name: Restore build cache
+      - name: Set up tools
+        uses: jdx/mise-action@v2
+      - name: Cache
         uses: actions/cache@v4
         with:
           path: |
             deps
             _build
-          key: ${{ env.MIX_ENV }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ env.MIX_ENV }}-${{ runner.os }}-${{ env.ELIXIR_VERSION }}-${{ env.OTP_VERSION }}-mix-
+          key: ${{ hashFiles('**/mise.toml') }}-${{ env.MIX_ENV }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ hashFiles('**/mise.toml') }}-${{ env.MIX_ENV }}-mix-
       - name: Install dependencies
         run: mix deps.get --only prod
       - name: Get branch name
