@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches: [main]
@@ -7,14 +6,11 @@ on:
       - "*"
   pull_request:
     branches: [main]
-
 permissions:
   contents: read
-
 env:
-  OTP_VERSION: 27.2
-  ELIXIR_VERSION: 1.18.1
-
+  OTP_VERSION: 27.3.2
+  ELIXIR_VERSION: 1.18.3
 jobs:
   qa:
     name: QA
@@ -53,7 +49,6 @@ jobs:
         run: mix sobelow --config
       - name: Run tests
         run: mix test --max-failures=1 --color
-
   build:
     name: BUILD
     needs: qa
@@ -88,7 +83,7 @@ jobs:
         run: |
           sed -i 's/version: "[0-9]\.[0-9]\.[0-9]"/version: "${{ steps.branch-name.outputs.tag }}"/g' mix.exs
       - name: Build
-        run: mix compile # --warnings-as-errors
+        run: mix compile --warnings-as-errors
       - name: Publish
         if: contains(github.ref, 'refs/tags/')
         run: mix hex.publish --yes
