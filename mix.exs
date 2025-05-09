@@ -30,7 +30,7 @@ defmodule SmsUp.MixProject do
       {:memento, "~> 0.5"},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:req, "~> 0.5"},
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
+      {:sobelow, "~> 0.14", only: [:dev, :test], runtime: false}
     ]
   end
 
