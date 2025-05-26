@@ -1,0 +1,7 @@
+brew "mise"
+brew "git"
+brew "openssl@3"
+brew "readline"
+brew "libyaml"
+brew "gmp"
+brew "autoconf"

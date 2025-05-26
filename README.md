@@ -19,7 +19,12 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). 
+## Local development setup:
 
-The docs can be found at [https://hexdocs.pm/sms_up](https://hexdocs.pm/sms_up).
+* Install [`Homebrew`](https://brew.sh)
+* Run `brew bundle`
+* Run `mise i`
+* Run `mix setup` to install and setup dependencies
+* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
