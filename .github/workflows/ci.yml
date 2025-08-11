@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up tools
         uses: jdx/mise-action@v2
   lint:
@@ -27,7 +27,7 @@ jobs:
       MIX_ENV: dev
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up tools
         uses: jdx/mise-action@v2
       - name: Cache
@@ -62,7 +62,7 @@ jobs:
       MIX_ENV: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up tools
         uses: jdx/mise-action@v2
       - name: Cache
@@ -86,7 +86,7 @@ jobs:
       HEX_API_KEY: ${{secrets.HEX_API_KEY}}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up tools
         uses: jdx/mise-action@v2
       - name: Cache
