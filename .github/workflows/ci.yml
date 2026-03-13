@@ -18,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Set up tools
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
   lint:
     name: LINT
     needs: [tools]
@@ -29,7 +29,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Set up tools
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
       - name: Cache
         uses: actions/cache@v5
         with:
@@ -64,7 +64,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Set up tools
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
       - name: Cache
         uses: actions/cache@v5
         with:
@@ -88,7 +88,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Set up tools
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
       - name: Cache
         uses: actions/cache@v5
         with:
