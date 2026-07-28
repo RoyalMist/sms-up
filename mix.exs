@@ -29,7 +29,7 @@ defmodule SmsUp.MixProject do
       {:ex_phone_number, "~> 0.4"},
       {:memento, "~> 0.5"},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
-      {:req, "~> 0.5"},
+      {:req, "~> 0.7"},
       {:sobelow, "~> 0.14", only: [:dev, :test], runtime: false}
     ]
   end
