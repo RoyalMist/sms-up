@@ -1,6 +1,6 @@
 [tools]
 elixir = "1.19.5"
-erlang = "27.3.4"
+erlang = "29.0.6"
 
 [tasks."dev:reset"]
 description = "Reset and recompile project"
