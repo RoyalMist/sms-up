@@ -13,7 +13,7 @@ env:
 jobs:
   tools:
     name: TOOLS
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -22,7 +22,7 @@ jobs:
   lint:
     name: LINT
     needs: [tools]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       MIX_ENV: dev
     steps:
@@ -57,7 +57,7 @@ jobs:
   test:
     name: TEST
     needs: [tools]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       MIX_ENV: test
     steps:
@@ -80,7 +80,7 @@ jobs:
   build:
     name: BUILD
     needs: [lint, test]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       MIX_ENV: prod
       HEX_API_KEY: ${{secrets.HEX_API_KEY}}
